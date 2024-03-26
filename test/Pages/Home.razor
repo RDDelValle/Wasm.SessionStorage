@@ -1,0 +1,64 @@
+﻿@page "/"
+<div style="display: flex; min-height: 100vh; align-items: center; justify-content: center; text-align: center;">
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <h1>Session Storage</h1>
+        <div style="display: flex; gap: 1rem;">
+            <div>
+                <label>Key:</label>
+                <input type="text" @bind="@Key">
+            </div>
+            <div>
+                <label>Value:</label>
+                <input type="text" @bind="@Value">
+            </div>
+        </div>
+        
+        <button type="button" @onclick="SetItem">Set Session Storage Value</button>
+        <hr />
+        <div>
+            <label>Stored Value:</label>
+            <p style="border: solid 1px tomato;">@StoredValue</p>
+        </div>
+        <button type="button" @onclick="GetItem">Get Session Storage Value</button>
+        <button type="button" @onclick="RemoveItem">Remove Session Storage Value</button>
+        <button type="button" @onclick="Clear">Clear Session Storage</button>
+
+    </div>
+</div>
+
+
+@inject ISessionStorageManager SessionStorage
+
+@code {
+    public string Key { get; set; } = "TestKey";
+    public string Value { get; set; } = "Some Test Value";
+    public string? StoredValue { get; set; }
+
+    private async Task SetItem()
+    {
+        StoredValue = null;
+        await SessionStorage.SetItemAsync(Key, Value);
+        Console.WriteLine(Key + Value);
+    }
+    
+    private async Task GetItem()
+    {
+        StoredValue = await SessionStorage.GetItemAsync(Key);
+        await InvokeAsync(StateHasChanged);
+        Console.WriteLine(Key);
+        Console.WriteLine(StoredValue);
+    }
+    
+    private async Task RemoveItem()
+    {
+        StoredValue = null;
+        await SessionStorage.RemoveItemAsync(Key);
+    }
+    
+    private async Task Clear()
+    {
+        StoredValue = null;
+        await SessionStorage.ClearAsync();
+    }
+
+}
